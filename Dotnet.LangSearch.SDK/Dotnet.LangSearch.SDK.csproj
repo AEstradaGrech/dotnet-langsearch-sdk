@@ -19,7 +19,7 @@
 		<Authors>Alvaro Estrada</Authors>
 		<Description>.Net SDK to work with LangSearch</Description>
 		<PackageTags>web-search-tool vector-search rag ai semantic-search</PackageTags>
-		<PackageProjectUrl>https://github.com/AEstradaGrech/dotnet-chroma-repositories</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/AEstradaGrech/dotnet-langsearch-sdk</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/AEstradaGrech/dotnet-langsearch-sdk</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
