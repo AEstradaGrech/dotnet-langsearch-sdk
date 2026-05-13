@@ -7,6 +7,6 @@ namespace Dotnet.LangSearch.SDK.Models.Response.WebSearch
         [JsonPropertyName("queryContext")]
         public QueryContext QueryContext { get; set; }
         [JsonPropertyName("webPages")]
-        public WebPage WebPages { get; set; }
+        public WebPage WebPage { get; set; }
     }
 }

@@ -62,7 +62,7 @@ namespace Dotnet.LangSearch.SDK.Client
             try
             {
                 request.Query = request.Query.Trim();
-
+                
                 if (string.IsNullOrEmpty(request.Query))
                     throw new LangSearchClientException($"{nameof(LangSearchClient)} >> Invalid Query >> Query is empty");
 
@@ -70,6 +70,14 @@ namespace Dotnet.LangSearch.SDK.Client
 
                 if (request.QueriedDocuments.Count == 0)
                     throw new LangSearchClientException($"{nameof(LangSearchClient)} >> No documents to re-rank present in the request");
+
+                if (request.ResultsNumber == null)
+                    request.ResultsNumber = request.QueriedDocuments.Count;
+
+                request.ResultsNumber = request.ResultsNumber = Math.Clamp(request.QueriedDocuments.Count, 0, 10);
+
+                if (string.IsNullOrEmpty(request.Model))
+                    request.Model = _settings.DefaultRerankModel;
 
                 var response = await _httpClient.PostAsJsonAsync<RankedSearchRequest>($"/{_settings.RankedSearchEndpoint}", request, new JsonSerializerOptions(JsonSerializerDefaults.Web));
 

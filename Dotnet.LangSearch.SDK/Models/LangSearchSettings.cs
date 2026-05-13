@@ -8,6 +8,7 @@ namespace Dotnet.LangSearch.SDK.Models
         public string WebSearchEndpoint { get; set; }
 
         public string RankedSearchEndpoint { get; set; }
+        public string DefaultRerankModel { get; set; }
 
         public string ApiKey { get; set; }
 
