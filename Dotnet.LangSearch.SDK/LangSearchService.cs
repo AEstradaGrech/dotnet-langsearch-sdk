@@ -112,5 +112,12 @@ namespace Dotnet.LangSearch.SDK
                 .OrderByDescending(page => page.Score)
                 .ToList();
         }
+
+        public async Task<List<string>> SearchRankedTexts(RankedPageRequest request, bool returnSnippet = false)
+        {
+            var results = await SearchAndRankPages(request);
+
+            return results.Count > 0 ? results.Select(result => returnSnippet ? result.Snippet : result.Summary).ToList() : [];
+        }
     }
 }

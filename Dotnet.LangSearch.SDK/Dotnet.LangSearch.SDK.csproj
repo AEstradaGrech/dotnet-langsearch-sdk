@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Estrada.OllamaSharp.LameChain.SDK" Version="0.1.1-alpha" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.8" />
@@ -14,7 +15,7 @@
 	<PropertyGroup>
 		<AssemblyName>Estrada.LangSearch.SDK</AssemblyName>
 		<PackageId>Estrada.LangSearch.SDK</PackageId>
-		<Version>0.1.0-alpha</Version>
+		<Version>0.1.2-alpha</Version>
 		<Title>Dotnet LangSearch SDK</Title>
 		<Authors>Alvaro Estrada</Authors>
 		<Description>.Net SDK to work with LangSearch</Description>
