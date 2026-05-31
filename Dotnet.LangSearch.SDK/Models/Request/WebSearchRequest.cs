@@ -4,7 +4,13 @@ using System.Text.Json.Serialization;
 namespace Dotnet.LangSearch.SDK.Models.Request
 {
     public class WebSearchRequest : LangSearchRequest
-    { 
+    {
+        public WebSearchRequest() : base() { }
+        public WebSearchRequest(string query, int results, EQueryFreshness freshness = EQueryFreshness.NoLimit) : base(query)
+        {
+            Count = results;
+            Freshness = freshness;
+        }
         /// <summary>
         /// Whether to show long text summaries for results. Possible values:
         /// - true: Show summaries.

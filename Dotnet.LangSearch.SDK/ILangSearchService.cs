@@ -17,6 +17,7 @@ namespace Dotnet.LangSearch.SDK
 
         Task<List<RankedWebPage>> SearchAndRankPages(RankedPageRequest request);
 
-        Task<List<string>> SearchRankedTexts(RankedPageRequest request, bool returnSnippet = false);
+        Task<List<string>> SearchWebTexts(WebSearchRequest request, bool returnSnippet = false, int? resultsClamp = null);
+        Task<List<string>> SearchRankedTexts(RankedPageRequest request, bool returnSnippet = false, int? resultsClamp = null);
     }
 }

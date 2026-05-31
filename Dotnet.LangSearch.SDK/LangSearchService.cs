@@ -113,11 +113,24 @@ namespace Dotnet.LangSearch.SDK
                 .ToList();
         }
 
-        public async Task<List<string>> SearchRankedTexts(RankedPageRequest request, bool returnSnippet = false)
+        public async Task<List<string>> SearchRankedTexts(RankedPageRequest request, bool returnSnippet = false, int? resultsClamp = null)
         {
             var results = await SearchAndRankPages(request);
 
-            return results.Count > 0 ? results.Select(result => returnSnippet ? result.Snippet : result.Summary).ToList() : [];
+            return results.Count == 0 ? [] : returnSnippet? 
+                results.Select(result => resultsClamp.HasValue ? result.Snippet.Substring(0, Math.Min(result.Snippet.Length, resultsClamp.Value)) : result.Snippet).ToList() :
+                results.Select(result => resultsClamp.HasValue ? result.Summary.Substring(0, Math.Min(result.Summary.Length, resultsClamp.Value)) : result.Summary).ToList();
+        }
+
+        public async Task<List<string>> SearchWebTexts(WebSearchRequest request, bool returnSnippet = false, int? resultsClamp = null)
+        {
+            request.Summary = !returnSnippet;
+
+            var results = await GetWebSearchResults(request);
+
+            return results.Count == 0 ? [] : returnSnippet ? 
+                results.Select(result => resultsClamp.HasValue ? result.Snippet.Substring(0, Math.Min(result.Snippet.Length, resultsClamp.Value)) : result.Snippet).ToList() :
+                results.Select(result => resultsClamp.HasValue ? result.Summary.Substring(0, Math.Min(result.Summary.Length, resultsClamp.Value)) : result.Summary).ToList();
         }
     }
 }

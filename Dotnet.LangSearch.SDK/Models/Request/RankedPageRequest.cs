@@ -5,6 +5,13 @@ namespace Dotnet.LangSearch.SDK.Models.Request
 {
     public class RankedPageRequest : LangSearchRequest
     {
+        public RankedPageRequest() : base() { }
+        public RankedPageRequest(string query, int results, EQueryFreshness freshness = EQueryFreshness.NoLimit) : base(query)
+        {
+            Count = results;
+            Freshness = freshness;
+        }
+
         [JsonPropertyName("freshness")]
         public EQueryFreshness Freshness { get; set; }
         /// <summary>
