@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Dotnet.LangSearch.SDK.Models.Response
 {
-    public class LangSearchWebResponse : LangSearchResponse
+    public class LangSearchWebResponse
     {
 
         /// <summary>
@@ -27,5 +27,8 @@ namespace Dotnet.LangSearch.SDK.Models.Response
 
         [JsonPropertyName("data")]
         public SearchData Data { get; set; }
+
+        [JsonPropertyName("usage")]
+        public TokensUsage TokensUsage { get; set; }
     }
 }

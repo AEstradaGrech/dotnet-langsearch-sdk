@@ -41,7 +41,7 @@ namespace Dotnet.LangSearch.SDK.Models.Response.WebSearch
         /// <summary>
         /// Full webpage text when contents.text is true or an object. Replaces snippet and is capped per result at maxCharacters (default 5000). May be absent when unavailable
         /// </summary>
-        [JsonPropertyName("summary")]
+        [JsonPropertyName("text")]
         public string? FullText { get; set; }
 
         /// <summary>

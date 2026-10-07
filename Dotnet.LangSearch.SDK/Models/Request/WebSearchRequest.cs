@@ -3,21 +3,38 @@ using System.Text.Json.Serialization;
 
 namespace Dotnet.LangSearch.SDK.Models.Request
 {
-    public class WebSearchRequest : LangSearchRequest
+    public class WebSearchRequest
     {
-        public WebSearchRequest() : base() { }
-        public WebSearchRequest(string query, int results, bool? isFullText = true, EQueryFreshness freshness = EQueryFreshness.NoLimit) : base(query)
+        public WebSearchRequest() { }
+        public WebSearchRequest(string query, int results, bool? isFullText = true, EQueryFreshness freshness = EQueryFreshness.NoLimit)
         {
+            Query = query;
             Count = results;
             Freshness = freshness;
-            IsFullText = isFullText;
+
+            if(isFullText.HasValue)
+                Contents = new Dictionary<string, object> { { "text", isFullText.Value } };
         }
+
+        public WebSearchRequest(string query, int results, int maxTextCharacters, EQueryFreshness freshness = EQueryFreshness.NoLimit) : this(query, results, false, freshness)
+        {
+            Contents = new Dictionary<string, object> { { "text", new { maxCharacters = maxTextCharacters } } };
+        }
+        [JsonIgnore]
+        public bool? IsFullText => Contents == null ? null : 
+            Contents.ContainsKey("text") ?
+            Contents["text"] is bool ?
+            (bool?)Contents["text"] : true : null;
+
+        [JsonPropertyName("query")]
+        public string Query { get; set; }
+
         /// <summary>
         /// true enables full webpage text, capped at 5000 characters per result by default. 
+        /// An object enables text and optionally sets maxCharacters; no separate true flag is needed. 
         /// false or omission uses snippet mode. In text mode, text replaces snippet.
         /// </summary>
-        [JsonPropertyName("contents")]
-        public bool? IsFullText { get; set; }
+        public Dictionary<string, object>? Contents { get; set; }
 
         /// <summary>
         /// Specifies the time range for search results. Possible values:

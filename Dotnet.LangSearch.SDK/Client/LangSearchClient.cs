@@ -45,7 +45,7 @@ namespace Dotnet.LangSearch.SDK.Client
 
                 // 07/10/2026 --> why this weird parsing process? because the API returns this as error response:
                 //  {"success":false,"code":"500","subCode":null,"msg":"Runtime Exception","data":null,"timestamp":1791380247620,"enableThrow":true,"enableRespException":false }
-                // but status is integer code is 200
+                // but status is integer for successful responses (code 200)
                 if (jsonResponse.TryGetPropertyValue("code", out var codeProperty) && codeProperty is JsonValue codeValue)
                 {
                     if (codeValue.TryGetValue<int>(out int codeInt))
@@ -59,7 +59,7 @@ namespace Dotnet.LangSearch.SDK.Client
 
                 else throw new LangSearchClientException($"{nameof(LangSearchClient)} >> Invalid response format: 'code' property is missing or invalid");
                 
-                var data = await response.Content.ReadFromJsonAsync<LangSearchWebResponse>();
+                var data = JsonSerializer.Deserialize<LangSearchWebResponse>(jsonResponse.ToJsonString(), JsonSerializerOptions.Web);
 
                 if (data.Code != HttpStatusCode.OK)
                     throw new LangSearchClientException($"{nameof(LangSearchClient)} >> {data.ErrorMessage}");
