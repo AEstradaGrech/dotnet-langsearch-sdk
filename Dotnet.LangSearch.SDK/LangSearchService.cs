@@ -1,7 +1,5 @@
 ﻿using Dotnet.LangSearch.SDK.Interfaces;
 using Dotnet.LangSearch.SDK.Models.Request;
-using Dotnet.LangSearch.SDK.Models.Response.RankedSearch;
-using Dotnet.LangSearch.SDK.Models.Response.Service;
 using Dotnet.LangSearch.SDK.Models.Response.WebSearch;
 
 namespace Dotnet.LangSearch.SDK
@@ -15,11 +13,11 @@ namespace Dotnet.LangSearch.SDK
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
-        public async Task<WebPage> GetWebPage(WebSearchRequest request)
+        public async Task<WebSearchResult> GetWebPage(WebSearchRequest request)
         {
             var data = await GetWebSearchData(request);
 
-            return data.WebPage;
+            return data.Result;
         }
 
         public async Task<List<WebPageValue>> GetWebSearchResults(WebSearchRequest request)
@@ -35,102 +33,15 @@ namespace Dotnet.LangSearch.SDK
             return response.Data;
         }
 
-        public async Task<RankedData> GetReRankData(RankedSearchRequest request)
+        public async Task<List<string>> SearchWebTexts(WebSearchRequest request)
         {
-            var data = await _client.GetRankedSearchResponse(request);
-
-            return new RankedData { Model = data.Model, Query = request.Query, Results = data.Results.Select(doc => new RankedDocument { Index = doc.Index, Score = doc.Score, Text = doc.Document.Text }).ToList() };
-        }
-
-        public async Task<List<RankedWebPage>> SearchAndRankPages(WebSearchRequest request)
-        {
-            request.Summary = true;
-
-            if (request.Count == null)
-                request.Count = 10;
-
-            request.Count = Math.Min(request.Count.Value, 10);
-            //ResultsNumber defaults to 10, and 10 is the maximum
-            var response = await GetWebPage(request);
-
-            //ResultsNumber defaults to total number of documents passed in the request
-            var rankRequest = new RankedSearchRequest
-            {
-                Query = request.Query,
-                QueriedDocuments = response.Results.Select(value => value.Summary).ToList(),
-                WithDocuments = true
-            };
-
-            var rankedPages = await GetReRankData(rankRequest);
-
-            return response.Results.Select(page =>
-                new RankedWebPage(
-                    page,
-                    rankedPages.Results.SingleOrDefault(result => result.Text == page.Summary).Index,
-                    rankedPages.Results.SingleOrDefault(result => result.Text == page.Summary).Score))
-                .OrderByDescending(page => page.Score)
-                .ToList();
-        }
-
-        public async Task<List<RankedWebPage>> SearchAndRankPages(RankedPageRequest request)
-        {
-            if (request.Count == null)
-                request.Count = 10;
-
-            var webRequest = new WebSearchRequest
-            {
-                Query = request.Query,
-                Count = Math.Min(request.Count.Value, 10),
-                Freshness = request.Freshness,
-                Summary = true
-            };
-
-            var page = await GetWebPage(webRequest);
-
-            var rankRequest = new RankedSearchRequest
-            {
-                Query = request.Query,
-                Model = request.Model,
-                WithDocuments = true,
-                QueriedDocuments = page.Results.Select(page => page.Summary).ToList(),
-            };
-
-            var rankedPages = await GetReRankData(rankRequest);
-
-            return request.ScoreThreshold == null ?
-                page.Results.Select(page => new RankedWebPage(
-                    page,
-                    rankedPages.Results.SingleOrDefault(result => result.Text == page.Summary).Index,
-                    rankedPages.Results.SingleOrDefault(result => result.Text == page.Summary).Score))
-                .OrderByDescending(page => page.Score)
-                .ToList() :
-                page.Results.Select(page => new RankedWebPage(
-                    page,
-                    rankedPages.Results.SingleOrDefault(result => result.Text == page.Summary).Index,
-                    rankedPages.Results.SingleOrDefault(result => result.Text == page.Summary).Score))
-                .Where(rankedPage => rankedPage.Score >= request.ScoreThreshold)
-                .OrderByDescending(page => page.Score)
-                .ToList();
-        }
-
-        public async Task<List<string>> SearchRankedTexts(RankedPageRequest request, bool returnSnippet = false, int? resultsClamp = null)
-        {
-            var results = await SearchAndRankPages(request);
-
-            return results.Count == 0 ? [] : returnSnippet? 
-                results.Select(result => resultsClamp.HasValue ? result.Snippet.Substring(0, Math.Min(result.Snippet.Length, resultsClamp.Value)) : result.Snippet).ToList() :
-                results.Select(result => resultsClamp.HasValue ? result.Summary.Substring(0, Math.Min(result.Summary.Length, resultsClamp.Value)) : result.Summary).ToList();
-        }
-
-        public async Task<List<string>> SearchWebTexts(WebSearchRequest request, bool returnSnippet = false, int? resultsClamp = null)
-        {
-            request.Summary = !returnSnippet;
-
             var results = await GetWebSearchResults(request);
 
-            return results.Count == 0 ? [] : returnSnippet ? 
-                results.Select(result => resultsClamp.HasValue ? result.Snippet.Substring(0, Math.Min(result.Snippet.Length, resultsClamp.Value)) : result.Snippet).ToList() :
-                results.Select(result => resultsClamp.HasValue ? result.Summary.Substring(0, Math.Min(result.Summary.Length, resultsClamp.Value)) : result.Summary).ToList();
+            bool isFullText = request.IsFullText.HasValue && request.IsFullText.Value;
+            return results.Count == 0 ? [] : 
+                results.Where(x => isFullText ? !string.IsNullOrEmpty(x.FullText) : !string.IsNullOrEmpty(x.Snippet))
+                       .Select(result => request.IsFullText.HasValue && request.IsFullText.Value ? result.FullText : result.Snippet)
+                       .ToList();
         }
     }
 }

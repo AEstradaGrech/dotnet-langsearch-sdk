@@ -14,7 +14,9 @@
 	<PropertyGroup>
 		<AssemblyName>Estrada.LangSearch.SDK</AssemblyName>
 		<PackageId>Estrada.LangSearch.SDK</PackageId>
-		<Version>0.1.2-alpha</Version>
+		<Version>0.2.0-alpha-001</Version>
+		<AssemblyVersion>0.2.0.0</AssemblyVersion>
+		<InformationalVersion>0.2.0-alpha-001</InformationalVersion>
 		<Title>Dotnet LangSearch SDK</Title>
 		<Authors>Alvaro Estrada</Authors>
 		<Description>.Net SDK to work with LangSearch</Description>

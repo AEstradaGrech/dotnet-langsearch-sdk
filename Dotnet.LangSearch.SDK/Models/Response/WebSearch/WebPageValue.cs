@@ -9,14 +9,14 @@ namespace Dotnet.LangSearch.SDK.Models.Response.WebSearch
         /// Return value example: https://api.langsearch.com/v1/web-search#1
         /// </summary>
         [JsonPropertyName("id")]
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         /// <summary>
         /// The title of the webpage.
         /// Return value example: ESG Report June 2024 - Apple Inc. (AAPL)
         /// </summary>
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// The URL of the webpage.
@@ -30,19 +30,19 @@ namespace Dotnet.LangSearch.SDK.Models.Response.WebSearch
         /// Return value example: https://www.crispidea.com/report/esg-report-june-2024-apple/
         /// </summary>
         [JsonPropertyName("displayUrl")]
-        public string DisplayUrl { get; set; }
+        public string? DisplayUrl { get; set; }
 
         /// <summary>
-        /// A brief snippet from the web page. 
+        /// Search snippet when full webpage text is not enabled. Omitted in text mode; available length varies by source.
         /// Returns a long text.
         /// </summary>
         [JsonPropertyName("snippet")]
-        public string Snippet { get; set; }
+        public string? Snippet { get; set; }
         /// <summary>
-        /// Full summary (request option)
+        /// Full webpage text when contents.text is true or an object. Replaces snippet and is capped per result at maxCharacters (default 5000). May be absent when unavailable
         /// </summary>
         [JsonPropertyName("summary")]
-        public string? Summary { get; set; }
+        public string? FullText { get; set; }
 
         /// <summary>
         /// The date the page was published.
@@ -50,10 +50,5 @@ namespace Dotnet.LangSearch.SDK.Models.Response.WebSearch
         [JsonPropertyName("datePublished")]
         public DateTime? PublishedDate { get; set; }
 
-        /// <summary>
-        /// The last date the page was crawled.
-        /// </summary>
-        [JsonPropertyName("dateLastCrawl")]
-        public DateTime? LastCrawledDate { get; set; }
     }
 }

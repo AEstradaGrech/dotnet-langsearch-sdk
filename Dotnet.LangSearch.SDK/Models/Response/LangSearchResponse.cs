@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Dotnet.LangSearch.SDK.Models.Response.WebSearch;
+using System.Net;
 using System.Text.Json.Serialization;
 
 namespace Dotnet.LangSearch.SDK.Models.Response
@@ -23,5 +24,8 @@ namespace Dotnet.LangSearch.SDK.Models.Response
         /// </summary>
         [JsonPropertyName("msg")]
         public string? ErrorMessage { get; set; }
+
+        [JsonPropertyName("usage")]
+        public TokensUsage TokensUsage { get; set; }
     }
 }

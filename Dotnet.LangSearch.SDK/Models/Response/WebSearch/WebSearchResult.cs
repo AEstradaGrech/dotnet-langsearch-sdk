@@ -2,12 +2,11 @@
 
 namespace Dotnet.LangSearch.SDK.Models.Response.WebSearch
 {
-    public class WebPage
+    public class WebSearchResult
     {
         [JsonPropertyName("webSearchUrl")]
         public string Url { get; set; }
-        [JsonPropertyName("totalEstimatedMatches")]
-        public int? Matches { get; set; }
+
         [JsonPropertyName("value")]
         public List<WebPageValue> Results { get; set; }
 
@@ -16,6 +15,6 @@ namespace Dotnet.LangSearch.SDK.Models.Response.WebSearch
         /// </summary>
 
         [JsonPropertyName("someResultsRemoved")]
-        public bool IsRestricted { get; set; }
+        public bool? HasRemovedResults { get; set; }
     }
 }

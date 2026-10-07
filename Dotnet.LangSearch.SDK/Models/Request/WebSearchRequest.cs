@@ -6,18 +6,18 @@ namespace Dotnet.LangSearch.SDK.Models.Request
     public class WebSearchRequest : LangSearchRequest
     {
         public WebSearchRequest() : base() { }
-        public WebSearchRequest(string query, int results, EQueryFreshness freshness = EQueryFreshness.NoLimit) : base(query)
+        public WebSearchRequest(string query, int results, bool? isFullText = true, EQueryFreshness freshness = EQueryFreshness.NoLimit) : base(query)
         {
             Count = results;
             Freshness = freshness;
+            IsFullText = isFullText;
         }
         /// <summary>
-        /// Whether to show long text summaries for results. Possible values:
-        /// - true: Show summaries.
-        /// - false: Do not show summaries (default).
+        /// true enables full webpage text, capped at 5000 characters per result by default. 
+        /// false or omission uses snippet mode. In text mode, text replaces snippet.
         /// </summary>
-        [JsonPropertyName("summary")]
-        public bool? Summary { get; set; }
+        [JsonPropertyName("contents")]
+        public bool? IsFullText { get; set; }
 
         /// <summary>
         /// Specifies the time range for search results. Possible values:
@@ -35,5 +35,17 @@ namespace Dotnet.LangSearch.SDK.Models.Request
         /// </summary>
         [JsonPropertyName("count")]
         public int? Count { get; set; }
+
+        /// <summary>
+        /// Restrict results to these domains. Omit or use an empty array for no inclusion filter.
+        /// Minimum string length: 1
+        /// </summary>
+        public List<string>? IncludeDomains { get; set; }
+
+        /// <summary>
+        /// Exlude results from this domains. Omit or use an empty array for no exclusion filter.
+        /// Minimum string length: 1
+        /// </summary>
+        public List<string>? ExcludeDomains { get; set; }
     }
 }
