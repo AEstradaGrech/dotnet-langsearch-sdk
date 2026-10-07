@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 
@@ -37,11 +38,27 @@ namespace Dotnet.LangSearch.SDK.Client
                 
                 var response = await _httpClient.PostAsJsonAsync<WebSearchRequest>($"/{_settings.WebSearchEndpoint}", request, options);
 
-                var x = await response.Content.ReadAsStringAsync();
-
                 if (!response.IsSuccessStatusCode)
                     throw new LangSearchClientException($"{nameof(LangSearchClient)} >> {nameof(GetWebSearchResponse)} >> an error has occured while requesting the data");
 
+                var jsonResponse = await response.Content.ReadFromJsonAsync<JsonObject>();
+
+                // 07/10/2026 --> why this weird parsing process? because the API returns this as error response:
+                //  {"success":false,"code":"500","subCode":null,"msg":"Runtime Exception","data":null,"timestamp":1791380247620,"enableThrow":true,"enableRespException":false }
+                // but status is integer code is 200
+                if (jsonResponse.TryGetPropertyValue("code", out var codeProperty) && codeProperty is JsonValue codeValue)
+                {
+                    if (codeValue.TryGetValue<int>(out int codeInt))
+                        if (codeInt != (int)HttpStatusCode.OK)
+                            throw new LangSearchClientException($"{nameof(LangSearchClient)} >> {getResponseErrorMessage(jsonResponse)}");
+
+                    if (codeValue.TryGetValue<string>(out string codeString))
+                        if (!Enum.TryParse<HttpStatusCode>(codeString, true, out var codeEnum) || codeEnum != HttpStatusCode.OK)
+                            throw new LangSearchClientException($"{nameof(LangSearchClient)} >> {getResponseErrorMessage(jsonResponse)}");
+                }
+
+                else throw new LangSearchClientException($"{nameof(LangSearchClient)} >> Invalid response format: 'code' property is missing or invalid");
+                
                 var data = await response.Content.ReadFromJsonAsync<LangSearchWebResponse>();
 
                 if (data.Code != HttpStatusCode.OK)
@@ -57,5 +74,12 @@ namespace Dotnet.LangSearch.SDK.Client
                 throw ex;
             }
         }
+
+        private string getResponseErrorMessage(JsonObject jsonResponse)
+            => jsonResponse.TryGetPropertyValue("msg", out var errorMessageProperty) &&
+                errorMessageProperty is JsonValue errorMessageValue &&
+                errorMessageValue.TryGetValue(out string? errorMessageString) ?
+                errorMessageString : "Unknown error";
+        
     }
 }
